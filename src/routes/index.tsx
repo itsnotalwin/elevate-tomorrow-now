@@ -271,6 +271,7 @@ const HTML = `
   <section class="chapter" id="ch3">
     <div class="letter-wrap reveal-on-scroll">
       <div class="letter-meta">
+        <div class="sticky-note" id="sticky-note">remember the<br>tertjie runs?<br>iconic. ★</div>
         <div class="letter-from">
           Vereeniging, South Africa<br>
           To: Somewhere in Australia<br>
