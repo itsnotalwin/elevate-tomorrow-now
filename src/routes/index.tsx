@@ -518,6 +518,7 @@ function TanniePage() {
       }
       if (buf.endsWith("oom")) {
         showPolaroid("road", "your oom. signed, sealed, delivered.", "type-oom");
+        buf = "";
       }
       if (buf.endsWith("paige")) {
         rainHearts(20);
