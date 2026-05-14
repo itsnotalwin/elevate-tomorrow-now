@@ -273,24 +273,25 @@ const HTML = `
       </div>
       <div class="letter-salutation">Dear Tannie —</div>
       <div class="letter-body-text">
-        <p>Last year I gave you a whole world in words.<br>This year I want to give you something harder:<br>the truth, with nothing decorating it.</p>
-        <p>We're twenty-two now.<span class="fn-mark" data-fn="1">¹</span> That means something. Not in a landmark way — in the quieter sense. The sense that another year passed, and we were both in it, even if we weren't in it <span class="redact" data-reveal="together.">████████</span></p>
+        <p>Last year I wrote you a love letter to a friendship.<br>This year is the same letter, just with the volume turned down<br>and the truth turned up.</p>
+        <p>We're twenty-two now.<span class="fn-mark" data-fn="1">¹</span> Not lovers, never were — something better. The kind of person you don't have to explain yourself to. The kind you can go quiet with for months and then text "are you alive" and somehow it picks up exactly <span class="redact" data-reveal="where it was.">████████████</span></p>
         <p>I won't pretend the distance was only geography. It wasn't. Some of it was us — the slow kind of drift that happens when life gets loud and you stop making the small effort that keeps people close. I know my part in that.<span class="fn-mark" data-fn="2">²</span></p>
-        <p>But here's what I also know: there are people in your life who will celebrate you loudly today. Who will post and call and make it feel like an occasion. And that's beautiful. That's real.<br><br>This isn't that. This is just me — still here, <span class="redact" data-reveal="still yours, in whatever way I still get to be.">████████████████████████████████████</span></p>
-        <p>You've grown this year in ways you probably can't fully see yet. That's how real growth works — it's only visible in the rearview. You went somewhere unfamiliar and you made it yours. That takes more courage than most people admit.</p>
-        <p>I still think about the laugh.<span class="fn-mark" data-fn="3">³</span> I still think about the version of us that existed before the world got busy. Not with sadness — just with recognition. It happened. It was real. It still is.</p>
-        <p>So here's what I'll say, without the poetry this time:<br><br>Happy birthday, Tannie.<br>You were twenty-one when I told you how much you meant to me.<br>You're twenty-two, and it's still true —<br>only now I mean it with less romance<br>and more of something that actually lasts.</p>
+        <p>You're my person. That's the whole thing. Not the romantic kind, not the dramatic kind — the kind that lasts because nobody's trying to make it anything other than what it is. <span class="redact" data-reveal="ride or die. plain and simple.">████████████████████████████████</span></p>
+        <p>You've grown this year in ways you probably can't fully see yet. That's how real growth works — it's only visible in the rearview. You went somewhere unfamiliar and you made it yours. That takes more courage than most people admit — and you did it loud, like everything else you do.<span class="fn-mark" data-fn="4">⁴</span></p>
+        <p>I still think about the laugh.<span class="fn-mark" data-fn="3">³</span> Not in a sappy way. In the way you remember a sound that means home. The bug. The highway. The bribe to that poor cop. The four learner's tests. The Swiss roll you abandoned after one bite like it personally offended you. That's the inventory. That's the friendship.</p>
+        <p>So here's what I'll say, without dressing it up:<br><br>Happy birthday, Tannie.<br>You're twenty-two and you're still the loudest, sharpest, most ridiculous person I've put in my corner —<br>and I'd pick you again. Every round.</p>
       </div>
       <div class="footnotes" id="footnotes">
-        <div class="footnote-item" id="fn-1"><div class="fn-num">¹</div><div class="fn-text">You and me both. Strange to say out loud.</div></div>
-        <div class="footnote-item" id="fn-2"><div class="fn-num">²</div><div class="fn-text">I'm not fishing for absolution. Just naming it because it deserves to be named.</div></div>
+        <div class="footnote-item" id="fn-1"><div class="fn-num">¹</div><div class="fn-text">Twenty-two. Strange to say out loud. We're basically aunties now.</div></div>
+        <div class="footnote-item" id="fn-2"><div class="fn-num">²</div><div class="fn-text">Not fishing for absolution. Just naming it because it deserves to be named.</div></div>
         <div class="footnote-item" id="fn-3"><div class="fn-num">³</div><div class="fn-text">The hyena one. The real one. The one you can't fake. That one.</div></div>
+        <div class="footnote-item" id="fn-4"><div class="fn-num">⁴</div><div class="fn-text">Also: still genuinely shocked you stopped gymming. Who are you. Where is she.</div></div>
       </div>
       <div class="letter-closing reveal-on-scroll">
         <div class="gold-rule"></div>
-        <div class="closing-line">With something that doesn't have a word —</div>
+        <div class="closing-line">Your Oom, your menace, your person —</div>
         <div class="sig" id="sig" title="press three times">Oom</div>
-        <div class="sig-secret" id="sig-secret">— still your Oom. always was. always.</div>
+        <div class="sig-secret" id="sig-secret">— still your Oom. always was. always will be. that's the whole deal.</div>
       </div>
     </div>
   </section>
@@ -300,12 +301,12 @@ const HTML = `
     <div class="final-gate">
       <div class="final-locked" id="final-locked">open all six to continue</div>
       <div class="final-message" id="final-message">
-        <div class="final-big">You were always<br>the good one.</div>
+        <div class="final-big">You're<br>my <span class="word-swap" id="word-swap" title="tap me">person</span>.</div>
         <div class="gold-rule"></div>
         <div class="final-small">
-          Not in a passive way. Not the safe, quiet kind of good. The kind that burns. The kind that costs something. The kind that keeps showing up even when it doesn't have to.<br><br>
-          I don't say that to be poetic.<br>I say it because it's one of the truest things I know about you.<br><br>
-          Happy birthday. Twenty-two looks right on you.
+          Not in a poetic way. Not in a movie way. In the way that means: when something stupid or huge or chaotic happens, you're the first person I want to tell.<br><br>
+          That hasn't changed. It's not going to.<br><br>
+          Happy birthday, you absolute menace. Twenty-two looks right on you.
         </div>
         <span class="final-secret-cue" id="final-secret-cue">— blow out the candle —</span>
       </div>
