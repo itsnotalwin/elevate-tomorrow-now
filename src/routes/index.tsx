@@ -134,6 +134,15 @@ body::after { content: ''; position: fixed; inset: 0; background-image: url("dat
 .final-secret-cue:hover { color: var(--gold); }
 .gold-rule { width: 40px; height: 1px; background: var(--gold-dim); margin: 2.5rem auto; }
 
+/* WORD SWAP */
+.word-swap { cursor: pointer; border-bottom: 1px dashed rgba(201,169,110,0.4); transition: color 0.4s; }
+.word-swap:hover { color: var(--gold); }
+
+/* STICKY NOTE */
+.sticky-note { position: absolute; left: -2.5rem; top: 30%; width: 140px; padding: 14px 12px; background: #f7e9a6; color: #4a4540; font-family: var(--hand); font-size: 18px; line-height: 1.2; transform: rotate(-7deg); box-shadow: 4px 6px 14px rgba(0,0,0,0.35); opacity: 0; pointer-events: none; transition: opacity 0.6s, transform 0.6s; z-index: 5; }
+.sticky-note.show { opacity: 1; transform: rotate(-7deg) translateY(-6px); pointer-events: all; }
+@media (max-width: 720px) { .sticky-note { left: 0.5rem; top: -3rem; } }
+
 /* PROGRESS */
 .progress-bar { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 100; opacity: 0; transition: opacity 0.6s; }
 .progress-bar.show { opacity: 1; }
@@ -195,7 +204,7 @@ const HTML = `
 <audio id="ambient" loop><source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_5e74f32e2a.mp3" type="audio/mp3"></audio>
 
 <div class="secret-hint" id="secret-hint">
-  secrets found · <span class="count" id="secret-count">0</span> / 9
+  secrets found · <span class="count" id="secret-count">0</span> / 14
 </div>
 
 <div class="progress-bar" id="progress-bar">
@@ -211,7 +220,7 @@ const HTML = `
     <div class="ch1-body">
       Last year I gave you everything — every memory, every metaphor, every version of you I'd ever loved.<br><br>
       This year I have fewer words. But they're more true.<br><br>
-      <span style="color:var(--gold-dim); font-size: 11px; letter-spacing: 0.2em;">— there are nine secrets in this letter. tap things.</span>
+      <span style="color:var(--gold-dim); font-size: 11px; letter-spacing: 0.2em;">— fourteen secrets are hiding in here. tap things. type things. press things.</span>
     </div>
     <div class="scroll-nudge">scroll to begin</div>
   </section>
@@ -262,6 +271,7 @@ const HTML = `
   <section class="chapter" id="ch3">
     <div class="letter-wrap reveal-on-scroll">
       <div class="letter-meta">
+        <div class="sticky-note" id="sticky-note">remember the<br>tertjie runs?<br>iconic. ★</div>
         <div class="letter-from">
           Vereeniging, South Africa<br>
           To: Somewhere in Australia<br>
@@ -273,24 +283,25 @@ const HTML = `
       </div>
       <div class="letter-salutation">Dear Tannie —</div>
       <div class="letter-body-text">
-        <p>Last year I gave you a whole world in words.<br>This year I want to give you something harder:<br>the truth, with nothing decorating it.</p>
-        <p>We're twenty-two now.<span class="fn-mark" data-fn="1">¹</span> That means something. Not in a landmark way — in the quieter sense. The sense that another year passed, and we were both in it, even if we weren't in it <span class="redact" data-reveal="together.">████████</span></p>
+        <p>Last year I wrote you a love letter to a friendship.<br>This year is the same letter, just with the volume turned down<br>and the truth turned up.</p>
+        <p>We're twenty-two now.<span class="fn-mark" data-fn="1">¹</span> Not lovers, never were — something better. The kind of person you don't have to explain yourself to. The kind you can go quiet with for months and then text "are you alive" and somehow it picks up exactly <span class="redact" data-reveal="where it was.">████████████</span></p>
         <p>I won't pretend the distance was only geography. It wasn't. Some of it was us — the slow kind of drift that happens when life gets loud and you stop making the small effort that keeps people close. I know my part in that.<span class="fn-mark" data-fn="2">²</span></p>
-        <p>But here's what I also know: there are people in your life who will celebrate you loudly today. Who will post and call and make it feel like an occasion. And that's beautiful. That's real.<br><br>This isn't that. This is just me — still here, <span class="redact" data-reveal="still yours, in whatever way I still get to be.">████████████████████████████████████</span></p>
-        <p>You've grown this year in ways you probably can't fully see yet. That's how real growth works — it's only visible in the rearview. You went somewhere unfamiliar and you made it yours. That takes more courage than most people admit.</p>
-        <p>I still think about the laugh.<span class="fn-mark" data-fn="3">³</span> I still think about the version of us that existed before the world got busy. Not with sadness — just with recognition. It happened. It was real. It still is.</p>
-        <p>So here's what I'll say, without the poetry this time:<br><br>Happy birthday, Tannie.<br>You were twenty-one when I told you how much you meant to me.<br>You're twenty-two, and it's still true —<br>only now I mean it with less romance<br>and more of something that actually lasts.</p>
+        <p>You're my person. That's the whole thing. Not the romantic kind, not the dramatic kind — the kind that lasts because nobody's trying to make it anything other than what it is. <span class="redact" data-reveal="ride or die. plain and simple.">████████████████████████████████</span></p>
+        <p>You've grown this year in ways you probably can't fully see yet. That's how real growth works — it's only visible in the rearview. You went somewhere unfamiliar and you made it yours. That takes more courage than most people admit — and you did it loud, like everything else you do.<span class="fn-mark" data-fn="4">⁴</span></p>
+        <p>I still think about the laugh.<span class="fn-mark" data-fn="3">³</span> Not in a sappy way. In the way you remember a sound that means home. The bug. The highway. The bribe to that poor cop. The four learner's tests. The Swiss roll you abandoned after one bite like it personally offended you. That's the inventory. That's the friendship.</p>
+        <p>So here's what I'll say, without dressing it up:<br><br>Happy birthday, Tannie.<br>You're twenty-two and you're still the loudest, sharpest, most ridiculous person I've put in my corner —<br>and I'd pick you again. Every round.</p>
       </div>
       <div class="footnotes" id="footnotes">
-        <div class="footnote-item" id="fn-1"><div class="fn-num">¹</div><div class="fn-text">You and me both. Strange to say out loud.</div></div>
-        <div class="footnote-item" id="fn-2"><div class="fn-num">²</div><div class="fn-text">I'm not fishing for absolution. Just naming it because it deserves to be named.</div></div>
+        <div class="footnote-item" id="fn-1"><div class="fn-num">¹</div><div class="fn-text">Twenty-two. Strange to say out loud. We're basically aunties now.</div></div>
+        <div class="footnote-item" id="fn-2"><div class="fn-num">²</div><div class="fn-text">Not fishing for absolution. Just naming it because it deserves to be named.</div></div>
         <div class="footnote-item" id="fn-3"><div class="fn-num">³</div><div class="fn-text">The hyena one. The real one. The one you can't fake. That one.</div></div>
+        <div class="footnote-item" id="fn-4"><div class="fn-num">⁴</div><div class="fn-text">Also: still genuinely shocked you stopped gymming. Who are you. Where is she.</div></div>
       </div>
       <div class="letter-closing reveal-on-scroll">
         <div class="gold-rule"></div>
-        <div class="closing-line">With something that doesn't have a word —</div>
+        <div class="closing-line">Your Oom, your menace, your person —</div>
         <div class="sig" id="sig" title="press three times">Oom</div>
-        <div class="sig-secret" id="sig-secret">— still your Oom. always was. always.</div>
+        <div class="sig-secret" id="sig-secret">— still your Oom. always was. always will be. that's the whole deal.</div>
       </div>
     </div>
   </section>
@@ -300,12 +311,12 @@ const HTML = `
     <div class="final-gate">
       <div class="final-locked" id="final-locked">open all six to continue</div>
       <div class="final-message" id="final-message">
-        <div class="final-big">You were always<br>the good one.</div>
+        <div class="final-big">You're<br>my <span class="word-swap" id="word-swap" title="tap me">person</span>.</div>
         <div class="gold-rule"></div>
         <div class="final-small">
-          Not in a passive way. Not the safe, quiet kind of good. The kind that burns. The kind that costs something. The kind that keeps showing up even when it doesn't have to.<br><br>
-          I don't say that to be poetic.<br>I say it because it's one of the truest things I know about you.<br><br>
-          Happy birthday. Twenty-two looks right on you.
+          Not in a poetic way. Not in a movie way. In the way that means: when something stupid or huge or chaotic happens, you're the first person I want to tell.<br><br>
+          That hasn't changed. It's not going to.<br><br>
+          Happy birthday, you absolute menace. Twenty-two looks right on you.
         </div>
         <span class="final-secret-cue" id="final-secret-cue">— blow out the candle —</span>
       </div>
@@ -355,7 +366,7 @@ function TanniePage() {
 
     // ── Secret tracking
     const found = new Set<string>();
-    const TOTAL_SECRETS = 9;
+    const TOTAL_SECRETS = 14;
     function foundSecret(key: string) {
       if (found.has(key)) return;
       found.add(key);
@@ -505,7 +516,47 @@ function TanniePage() {
         foundSecret("name");
         buf = "";
       }
+      if (buf.endsWith("oom")) {
+        showPolaroid("road", "your oom. signed, sealed, delivered.", "type-oom");
+        buf = "";
+      }
+      if (buf.endsWith("paige")) {
+        rainHearts(20);
+        foundSecret("type-paige");
+      }
     });
+
+    // ── Word swap on final ("person" → menace → chaos → ride-or-die → favourite → tannie → person)
+    const wordSwap = $("word-swap");
+    if (wordSwap) {
+      const words = ["person", "menace", "chaos", "ride-or-die", "favourite", "tannie"];
+      let widx = 0;
+      wordSwap.addEventListener("click", () => {
+        widx = (widx + 1) % words.length;
+        wordSwap.textContent = words[widx];
+        if (widx === words.length - 1) foundSecret("word-swap");
+      });
+    }
+
+    // ── Sticky note: click the margin line area (left edge of letter) reveals it
+    const letterWrap = document.querySelector<HTMLElement>(".letter-wrap");
+    const stickyNote = $("sticky-note");
+    if (letterWrap && stickyNote) {
+      letterWrap.addEventListener("click", (e) => {
+        const rect = letterWrap.getBoundingClientRect();
+        const x = (e as MouseEvent).clientX - rect.left;
+        // margin line is around 3.5rem (~56px) on desktop; allow a small hit zone
+        if (x < 70 && !stickyNote.classList.contains("show")) {
+          stickyNote.classList.add("show");
+          foundSecret("sticky");
+        }
+      });
+      stickyNote.addEventListener("click", (e) => e.stopPropagation());
+    }
+
+    // ── Stamp 5x easter egg (separate from the 3x photo reveal)
+    // stampClicks already counts; piggyback for 5+
+    // We count via a closure on the existing handler below — handled there.
 
     function rainHearts(n: number) {
       for (let i = 0; i < n; i++) {
