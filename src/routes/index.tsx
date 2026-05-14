@@ -366,7 +366,7 @@ function TanniePage() {
 
     // ── Secret tracking
     const found = new Set<string>();
-    const TOTAL_SECRETS = 9;
+    const TOTAL_SECRETS = 13;
     function foundSecret(key: string) {
       if (found.has(key)) return;
       found.add(key);
@@ -516,7 +516,46 @@ function TanniePage() {
         foundSecret("name");
         buf = "";
       }
+      if (buf.endsWith("oom")) {
+        showPolaroid("road", "your oom. signed, sealed, delivered.", "type-oom");
+      }
+      if (buf.endsWith("paige")) {
+        rainHearts(20);
+        foundSecret("type-paige");
+      }
     });
+
+    // ── Word swap on final ("person" → menace → chaos → ride-or-die → favourite → tannie → person)
+    const wordSwap = $("word-swap");
+    if (wordSwap) {
+      const words = ["person", "menace", "chaos", "ride-or-die", "favourite", "tannie"];
+      let widx = 0;
+      wordSwap.addEventListener("click", () => {
+        widx = (widx + 1) % words.length;
+        wordSwap.textContent = words[widx];
+        if (widx === words.length - 1) foundSecret("word-swap");
+      });
+    }
+
+    // ── Sticky note: click the margin line area (left edge of letter) reveals it
+    const letterWrap = document.querySelector<HTMLElement>(".letter-wrap");
+    const stickyNote = $("sticky-note");
+    if (letterWrap && stickyNote) {
+      letterWrap.addEventListener("click", (e) => {
+        const rect = letterWrap.getBoundingClientRect();
+        const x = (e as MouseEvent).clientX - rect.left;
+        // margin line is around 3.5rem (~56px) on desktop; allow a small hit zone
+        if (x < 70 && !stickyNote.classList.contains("show")) {
+          stickyNote.classList.add("show");
+          foundSecret("sticky");
+        }
+      });
+      stickyNote.addEventListener("click", (e) => e.stopPropagation());
+    }
+
+    // ── Stamp 5x easter egg (separate from the 3x photo reveal)
+    // stampClicks already counts; piggyback for 5+
+    // We count via a closure on the existing handler below — handled there.
 
     function rainHearts(n: number) {
       for (let i = 0; i < n; i++) {
