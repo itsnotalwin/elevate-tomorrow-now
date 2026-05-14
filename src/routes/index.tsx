@@ -204,7 +204,7 @@ const HTML = `
 <audio id="ambient" loop><source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_5e74f32e2a.mp3" type="audio/mp3"></audio>
 
 <div class="secret-hint" id="secret-hint">
-  secrets found · <span class="count" id="secret-count">0</span> / 13
+  secrets found · <span class="count" id="secret-count">0</span> / 14
 </div>
 
 <div class="progress-bar" id="progress-bar">
@@ -220,7 +220,7 @@ const HTML = `
     <div class="ch1-body">
       Last year I gave you everything — every memory, every metaphor, every version of you I'd ever loved.<br><br>
       This year I have fewer words. But they're more true.<br><br>
-      <span style="color:var(--gold-dim); font-size: 11px; letter-spacing: 0.2em;">— thirteen secrets are hiding in here. tap things. type things. press things.</span>
+      <span style="color:var(--gold-dim); font-size: 11px; letter-spacing: 0.2em;">— fourteen secrets are hiding in here. tap things. type things. press things.</span>
     </div>
     <div class="scroll-nudge">scroll to begin</div>
   </section>
@@ -366,7 +366,7 @@ function TanniePage() {
 
     // ── Secret tracking
     const found = new Set<string>();
-    const TOTAL_SECRETS = 13;
+    const TOTAL_SECRETS = 14;
     function foundSecret(key: string) {
       if (found.has(key)) return;
       found.add(key);
