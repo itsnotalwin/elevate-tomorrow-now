@@ -134,6 +134,15 @@ body::after { content: ''; position: fixed; inset: 0; background-image: url("dat
 .final-secret-cue:hover { color: var(--gold); }
 .gold-rule { width: 40px; height: 1px; background: var(--gold-dim); margin: 2.5rem auto; }
 
+/* WORD SWAP */
+.word-swap { cursor: pointer; border-bottom: 1px dashed rgba(201,169,110,0.4); transition: color 0.4s; }
+.word-swap:hover { color: var(--gold); }
+
+/* STICKY NOTE */
+.sticky-note { position: absolute; left: -2.5rem; top: 30%; width: 140px; padding: 14px 12px; background: #f7e9a6; color: #4a4540; font-family: var(--hand); font-size: 18px; line-height: 1.2; transform: rotate(-7deg); box-shadow: 4px 6px 14px rgba(0,0,0,0.35); opacity: 0; pointer-events: none; transition: opacity 0.6s, transform 0.6s; z-index: 5; }
+.sticky-note.show { opacity: 1; transform: rotate(-7deg) translateY(-6px); pointer-events: all; }
+@media (max-width: 720px) { .sticky-note { left: 0.5rem; top: -3rem; } }
+
 /* PROGRESS */
 .progress-bar { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 100; opacity: 0; transition: opacity 0.6s; }
 .progress-bar.show { opacity: 1; }
