@@ -277,7 +277,7 @@ const HTML = `
     <div class="ch1-rule"></div>
     <div class="ch1-body">
       Last year I wrote you a whole novel. This year I'm writing you the truth.<br><br>
-      Tap things. Hold things. Type things.<br>Sixteen secrets are hiding in here. Find them all.
+      Tap things. Hold things. Shake things.<br>Sixteen secrets are hiding in here. Find them all.
     </div>
     <div class="scroll-nudge">scroll ↓</div>
   </section>
@@ -708,22 +708,7 @@ function TanniePage() {
       }
     });
 
-    // ── Type buffer: tannie / oom / paige / sushi / 22
-    let buf = "";
-    const KONAMI = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
-    let kIdx = 0;
-    document.addEventListener("keydown", (e) => {
-      // Konami
-      if (e.key === KONAMI[kIdx]) { kIdx++; if (kIdx === KONAMI.length) { confettiBurst(100); rainHearts(60); foundSecret("konami"); kIdx = 0; } }
-      else kIdx = 0;
-
-      if (e.key.length !== 1) return;
-      buf = (buf + e.key.toLowerCase()).slice(-8);
-      if (buf.endsWith("tannie")) { rainHearts(30); foundSecret("type-tannie"); }
-      if (buf.endsWith("oom")) { showPolaroid("road", "your oom. signed, sealed, delivered.", "type-oom"); }
-      if (buf.endsWith("paige")) { rainHearts(20); foundSecret("type-paige"); }
-      if (buf.endsWith("22")) { confettiBurst(30); foundSecret("type-22"); }
-    });
+    // (typing-based secrets removed for iOS — all secrets are tap/hold/shake)
 
     // ── Word swap
     const wordSwap = $("word-swap");
