@@ -668,9 +668,28 @@ function TanniePage() {
     // ── Fragments
     let openedCount = 0;
     const totalFragments = 6;
+    const lastTap = new Map<HTMLElement, number>();
+    let lpTimer: ReturnType<typeof setTimeout> | null = null;
     document.querySelectorAll<HTMLDivElement>(".fragment").forEach((frag) => {
+      const startLP = () => {
+        if (lpTimer) clearTimeout(lpTimer);
+        lpTimer = setTimeout(() => {
+          haptic(20);
+          showTip(`tip · double-tap to <span class="tk">pin ★</span> a memory`, 2400);
+          foundSecret("longpress-tile");
+        }, 650);
+      };
+      const endLP = () => { if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; } };
+      frag.addEventListener("mousedown", startLP);
+      frag.addEventListener("mouseup", endLP);
+      frag.addEventListener("mouseleave", endLP);
+      frag.addEventListener("touchstart", startLP, { passive: true });
+      frag.addEventListener("touchend", endLP);
+      frag.addEventListener("touchmove", endLP);
+
       frag.addEventListener("click", (e) => {
         const target = e.target as HTMLElement;
+        if (target.closest(".photo-upload-label, .photo-slot")) return;
         if (target.classList.contains("fragment-photo-cue")) {
           e.stopPropagation();
           const photo = frag.dataset.photo;
@@ -678,6 +697,18 @@ function TanniePage() {
           if (photo) showPolaroid(photo, cap, "photo-" + photo);
           return;
         }
+        const now = Date.now();
+        const prev = lastTap.get(frag) || 0;
+        if (now - prev < 320) {
+          frag.classList.toggle("pinned");
+          const k = frag.dataset.key || frag.dataset.idx || "";
+          if (frag.classList.contains("pinned")) { if (!pins.includes(k)) pins.push(k); }
+          else { pins = pins.filter((x) => x !== k); }
+          savePins(); haptic(15);
+          if (pins.length >= 1) foundSecret("pin-one");
+          lastTap.set(frag, 0); return;
+        }
+        lastTap.set(frag, now);
         if (frag.classList.contains("opened")) return;
         frag.classList.add("opened");
         openedCount++;
@@ -747,6 +778,7 @@ function TanniePage() {
       if (stampHeld) return;
       stampTimer = setTimeout(() => {
         stampHeld = true;
+        haptic([10, 30, 10]);
         stampEl.classList.add("broken");
         showPolaroid("letter", "kept all your voice notes too.", "stamp-hold");
       }, 1200);
@@ -858,16 +890,63 @@ function TanniePage() {
 
     // ── Shake-for-hearts (mobile)
     let lastShake = 0;
-    window.addEventListener("devicemotion", (e) => {
+    function onMotion(e: DeviceMotionEvent) {
       const a = e.accelerationIncludingGravity;
       if (!a) return;
       const mag = Math.abs(a.x || 0) + Math.abs(a.y || 0) + Math.abs(a.z || 0);
       if (mag > 35 && Date.now() - lastShake > 1500) {
         lastShake = Date.now();
+        haptic([30, 60, 30]);
         rainHearts(25);
         foundSecret("shake");
       }
+    }
+    // attach immediately for non-iOS / where permission isn't required
+    window.addEventListener("devicemotion", onMotion);
+
+    // ── Long-press headline
+    const headline = $("ch1-headline");
+    if (headline) {
+      let hT: ReturnType<typeof setTimeout> | null = null;
+      const s = () => { if (hT) clearTimeout(hT); hT = setTimeout(() => {
+        haptic(40);
+        headline.innerHTML = "Some people you outgrow.<br><em>You</em> are the home I keep going back to.";
+        showTip(`<span class="tk">truth unlocked</span>`, 2200);
+        foundSecret("longpress-headline");
+      }, 1500); };
+      const e = () => { if (hT) { clearTimeout(hT); hT = null; } };
+      headline.addEventListener("mousedown", s);
+      headline.addEventListener("mouseup", e);
+      headline.addEventListener("mouseleave", e);
+      headline.addEventListener("touchstart", s, { passive: true });
+      headline.addEventListener("touchend", e);
+    }
+
+    // ── Tap progress dots in order 1→6 secret
+    const dotSeq: number[] = [];
+    [0,1,2,3,4,5].forEach((i) => {
+      const d = $("pd" + i); if (!d) return;
+      d.addEventListener("click", () => {
+        dotSeq.push(i);
+        d.classList.add("lit"); setTimeout(() => d.classList.remove("lit"), 400);
+        haptic(8);
+        if (dotSeq.length > 6) dotSeq.shift();
+        const ok = dotSeq.length === 6 && dotSeq.every((v, idx) => v === idx);
+        if (ok) { foundSecret("dot-sequence"); confettiBurst(40); }
+      });
     });
+
+    // ── Swipe-down on the letter
+    const lwSwipe = $("letter-wrap");
+    if (lwSwipe) {
+      let sy = 0, swiped = false;
+      lwSwipe.addEventListener("touchstart", (e) => { sy = e.touches[0].clientY; swiped = false; }, { passive: true });
+      lwSwipe.addEventListener("touchmove", (e) => {
+        if (swiped) return;
+        const dy = e.touches[0].clientY - sy;
+        if (dy > 90) { swiped = true; haptic(25); showTip(`<span class="tk">postmark unsealed</span> · vereeniging → you`, 2600); foundSecret("swipe-letter"); }
+      }, { passive: true });
+    }
 
     // ── Helpers
     function rainHearts(n: number) {
