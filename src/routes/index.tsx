@@ -435,9 +435,9 @@ const HTML = `
 </div>
 
 <div class="banner" id="banner">
-  <div class="banner-eyebrow">all sixteen · found</div>
+  <div class="banner-eyebrow">all twenty-two · found</div>
   <div class="banner-title">You found everything.<br>Of course you did.</div>
-  <div class="banner-body">That's the thing about you — you don't stop until you've seen the whole picture.<br>Same energy you bring to friendship. Same energy you bring to life.<br><br>I love you, menace. Happy 22.</div>
+  <div class="banner-body">That's the thing about you — you don't stop until you've seen the whole picture.<br>Same energy you bring to friendship. Same energy you bring to life.<br><br>22 secrets for 22 years of you. I love you, menace. Happy birthday.</div>
   <button class="banner-close" id="banner-close">close</button>
 </div>
 `;
