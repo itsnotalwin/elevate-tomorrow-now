@@ -521,18 +521,109 @@ function TanniePage() {
     });
 
     // ── Secret tracking
-    const found = new Set<string>();
-    const TOTAL_SECRETS = 16;
+    const TOTAL_SECRETS = 22;
+    const STORAGE_KEY = "tannie-22-progress-v1";
+    const PHOTO_KEY = "tannie-22-photos-v1";
+    const PIN_KEY = "tannie-22-pins-v1";
+    let found = new Set<string>();
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) found = new Set(JSON.parse(raw));
+    } catch {}
+    function saveFound() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...found])); } catch {} }
+    function haptic(p: number | number[] = 18) {
+      try { if ("vibrate" in navigator) navigator.vibrate(p as any); } catch {}
+    }
+    const tipEl = $("tip-toast")!;
+    let tipTimer: ReturnType<typeof setTimeout> | null = null;
+    function showTip(html: string, ms = 2600) {
+      tipEl.innerHTML = html;
+      tipEl.classList.add("show");
+      if (tipTimer) clearTimeout(tipTimer);
+      tipTimer = setTimeout(() => tipEl.classList.remove("show"), ms);
+    }
     function foundSecret(key: string) {
       if (found.has(key)) return;
       found.add(key);
+      saveFound();
+      haptic([12, 40, 22]);
       secretCount.textContent = String(found.size);
       secretHint.classList.add("show");
       // tiny burst
       burstHearts(6, lastX || window.innerWidth/2, lastY || 80);
+      showTip(`<span class="tk">secret ${found.size}/22</span> · found`, 1800);
       if (found.size === TOTAL_SECRETS) {
-        setTimeout(() => { confettiBurst(80); banner.classList.add("show"); }, 500);
+        setTimeout(() => { confettiBurst(120); haptic([40,60,40,60,80]); banner.classList.add("show"); }, 500);
       }
+    }
+    secretCount.textContent = String(found.size);
+    if (found.size > 0) secretHint.classList.add("show");
+
+    // ── Photo uploads (per fragment, persisted as data URLs)
+    let photos: Record<string, string> = {};
+    try { photos = JSON.parse(localStorage.getItem(PHOTO_KEY) || "{}"); } catch {}
+    function applyThumb(key: string, dataUrl: string) {
+      const t = document.querySelector<HTMLElement>(`.photo-thumb[data-thumb="${key}"]`);
+      if (t) { t.style.backgroundImage = `url(${dataUrl})`; t.classList.remove("empty"); t.textContent = ""; }
+    }
+    Object.entries(photos).forEach(([k, v]) => { applyThumb(k, v); PHOTO_MAP[k] = v; });
+    function readFile(file: File): Promise<string> {
+      return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result as string); r.onerror = rej; r.readAsDataURL(file); });
+    }
+    function downscale(dataUrl: string): Promise<string> {
+      return new Promise((res) => {
+        const img = new Image();
+        img.onload = () => {
+          const max = 900; let w = img.width, h = img.height;
+          if (w > max || h > max) { const r = Math.min(max/w, max/h); w = Math.round(w*r); h = Math.round(h*r); }
+          const c = document.createElement("canvas"); c.width = w; c.height = h;
+          c.getContext("2d")!.drawImage(img, 0, 0, w, h);
+          res(c.toDataURL("image/jpeg", 0.82));
+        };
+        img.onerror = () => res(dataUrl);
+        img.src = dataUrl;
+      });
+    }
+    document.querySelectorAll<HTMLInputElement>('input[data-upload]').forEach((inp) => {
+      inp.addEventListener("change", async () => {
+        const f = inp.files?.[0]; if (!f) return;
+        try {
+          const raw = await readFile(f);
+          const small = await downscale(raw);
+          const k = inp.dataset.upload!;
+          photos[k] = small;
+          try { localStorage.setItem(PHOTO_KEY, JSON.stringify(photos)); } catch {}
+          applyThumb(k, small);
+          PHOTO_MAP[k] = small;
+          const frag = inp.closest<HTMLElement>(".fragment");
+          if (frag) { frag.dataset.photo = k; if (!frag.dataset.caption) frag.dataset.caption = "yours."; }
+          haptic(30);
+          foundSecret("upload-first");
+          if (Object.keys(photos).length >= 6) foundSecret("upload-all");
+          showTip(`<span class="tk">photo saved</span> · stays on your phone`, 2200);
+        } catch {}
+      });
+    });
+
+    // ── Restore pins
+    let pins: string[] = [];
+    try { pins = JSON.parse(localStorage.getItem(PIN_KEY) || "[]"); } catch {}
+    function savePins() { try { localStorage.setItem(PIN_KEY, JSON.stringify(pins)); } catch {} }
+    pins.forEach((k) => document.querySelector(`.fragment[data-key="${k}"]`)?.classList.add("pinned"));
+
+    // forward decls so loader-enter can call these (function decls are hoisted)
+    function enableMotion() {
+      const DM = (window as any).DeviceMotionEvent;
+      if (DM && typeof DM.requestPermission === "function") {
+        DM.requestPermission().then((p: string) => { if (p === "granted") window.addEventListener("devicemotion", onMotion); }).catch(() => {});
+      } else {
+        window.addEventListener("devicemotion", onMotion);
+      }
+    }
+    function showOnboarding() {
+      setTimeout(() => showTip(`gestures live here · <span class="tk">long-press</span>, <span class="tk">double-tap</span>, <span class="tk">shake</span>`, 3600), 1200);
+      setTimeout(() => showTip(`upload your own photos to the memories ↓`, 3000), 5200);
+      if (found.size > 0) setTimeout(() => showTip(`welcome back · <span class="tk">${found.size}/22</span> already found`, 2800), 8800);
     }
 
     // ── Polaroid
