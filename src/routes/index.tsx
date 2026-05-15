@@ -97,6 +97,22 @@ body::after { content: ''; position: fixed; inset: 0; background-image: url("dat
 .fragment.opened .fragment-hint { opacity: 0; }
 .fragment::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(212,184,122,0.04) 50%, transparent 100%); transform: translateX(-100%); transition: transform 0s; }
 .fragment:hover::before { transform: translateX(100%); transition: transform 0.9s ease; }
+.fragment.pinned { box-shadow: inset 0 0 0 1px var(--gold); }
+.fragment-pin { position: absolute; top: 0.9rem; right: 1rem; font-size: 13px; color: var(--gold); opacity: 0; transition: opacity 0.3s; }
+.fragment.pinned .fragment-pin { opacity: 1; }
+
+/* PHOTO UPLOAD */
+.photo-slot { margin-top: 1rem; display: flex; align-items: center; gap: 0.7rem; }
+.photo-thumb { width: 46px; height: 46px; background: #0e0c09 center/cover no-repeat; border: 1px solid #2a261e; flex-shrink: 0; }
+.photo-thumb.empty { display: flex; align-items: center; justify-content: center; color: var(--ink-soft); font-family: var(--sans); font-size: 18px; }
+.photo-upload-label { font-family: var(--sans); font-size: 9px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; cursor: none; border-bottom: 1px dashed var(--gold-dim); padding-bottom: 2px; transition: color 0.3s; }
+.photo-upload-label:hover { color: var(--gold); }
+.photo-upload-label input { display: none; }
+
+/* TIP TOAST */
+.tip-toast { position: fixed; left: 50%; bottom: 4.2rem; transform: translateX(-50%) translateY(20px); background: rgba(20,18,14,0.95); border: 1px solid var(--gold-dim); padding: 0.8rem 1.4rem; font-family: var(--sans); font-size: 11px; letter-spacing: 0.15em; color: var(--paper); text-transform: uppercase; z-index: 800; opacity: 0; transition: all 0.5s var(--t); pointer-events: none; max-width: 92vw; text-align: center; }
+.tip-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.tip-toast .tk { color: var(--gold); }
 
 /* JUKEBOX */
 .jukebox-wrap { max-width: 720px; margin: 6rem auto 0; text-align: center; opacity: 0; transition: opacity 1.2s var(--t); }
@@ -183,8 +199,9 @@ body::after { content: ''; position: fixed; inset: 0; background-image: url("dat
 /* PROGRESS */
 .progress-bar { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 100; opacity: 0; transition: opacity 0.6s; }
 .progress-bar.show { opacity: 1; }
-.progress-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-mid); transition: background 0.4s, transform 0.4s; }
+.progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-mid); transition: background 0.4s, transform 0.4s; cursor: none; }
 .progress-dot.done { background: var(--gold); transform: scale(1.4); }
+.progress-dot.lit { background: var(--rose); transform: scale(1.6); }
 
 /* MUSIC */
 .music-btn { position: fixed; top: 1.5rem; right: 1.5rem; font-family: var(--sans); font-size: 9px; letter-spacing: 0.3em; color: var(--ink-soft); text-transform: uppercase; background: none; border: 1px solid #2a261e; padding: 0.6rem 1rem; cursor: none; z-index: 200; opacity: 0; transition: opacity 0.6s, color 0.3s, border-color 0.3s; }
@@ -262,8 +279,10 @@ const HTML = `
 <audio id="ambient" loop><source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_5e74f32e2a.mp3" type="audio/mp3"></audio>
 
 <div class="secret-hint" id="secret-hint">
-  secrets · <span class="count" id="secret-count">0</span> / 16 <span class="pulse"> · keep poking</span>
+  secrets · <span class="count" id="secret-count">0</span> / 22 <span class="pulse"> · keep poking</span>
 </div>
+
+<div class="tip-toast" id="tip-toast"></div>
 
 <div class="progress-bar" id="progress-bar">
   <div class="progress-dot" id="pd0"></div><div class="progress-dot" id="pd1"></div><div class="progress-dot" id="pd2"></div>
@@ -272,12 +291,12 @@ const HTML = `
 
 <div id="main">
   <section class="chapter" id="ch1">
-    <div class="ch1-eyebrow">Twenty — two · A letter from your person</div>
-    <div class="ch1-headline">Some people you outgrow.<br><em>You</em> I just keep choosing.</div>
+    <div class="ch1-eyebrow">Twenty — two · A letter to my person</div>
+    <div class="ch1-headline" id="ch1-headline" title="press &amp; hold me">Some people you outgrow.<br><em>You</em> I just keep choosing.</div>
     <div class="ch1-rule"></div>
     <div class="ch1-body">
-      Last year I wrote you a whole novel. This year I'm writing you the truth.<br><br>
-      Tap things. Hold things. Shake things.<br>Sixteen secrets are hiding in here. Find them all.
+      Last year I wrote you a novel. This year I'm writing you the truth.<br><br>
+      Tap things. Hold things. Shake things. Upload your own.<br>Twenty-two secrets are hiding in here — one for every year of you.
     </div>
     <div class="scroll-nudge">scroll ↓</div>
   </section>
@@ -287,40 +306,46 @@ const HTML = `
     <div class="ch2-title reveal-on-scroll">Receipts. Memories. Crimes.<br>The friendship in evidence.</div>
     <div class="ch2-instruction reveal-on-scroll">— tap each tile. some hide a photo. —</div>
     <div class="fragment-grid reveal-on-scroll" id="fragment-grid">
-      <div class="fragment" data-idx="0" data-photo="cafe" data-caption="our table. always.">
-        <div class="fragment-number">I.</div>
+      <div class="fragment" data-idx="0" data-photo="cafe" data-caption="our table. always." data-key="cafe">
+        <div class="fragment-number">I.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The laugh. Still the loudest weapon you own.</div>
         <div class="fragment-reveal">Hyena energy. Zero filter. Heads turn, dogs bark, waiters reconsider their career. It's the sound of home for me — even from 9,272 km away.<br><span class="fragment-photo-cue">view photo →</span></div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="cafe">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="cafe" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="1">
-        <div class="fragment-number">II.</div>
+      <div class="fragment" data-idx="1" data-key="loyalty">
+        <div class="fragment-number">II.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The fact that you've never once aimed your sharpness at me.</div>
         <div class="fragment-reveal">You could have. I've earned it once or twice. You never did. That's not nothing — that's a whole code of honour, and I clocked it every single time.</div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="loyalty">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="loyalty" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="2" data-photo="road" data-caption="the highway. before the bug.">
-        <div class="fragment-number">III.</div>
+      <div class="fragment" data-idx="2" data-photo="road" data-caption="the highway. before the bug." data-key="road">
+        <div class="fragment-number">III.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The bug. The bribe. The four learner's tests.</div>
         <div class="fragment-reveal">I'm telling that story until I'm eighty and toothless. Not because it was funny — though it was criminal — but because it was so impossibly, perfectly us.<br><span class="fragment-photo-cue">view photo →</span></div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="road">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="road" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="3" data-photo="sky" data-caption="9,272 km of sky.">
-        <div class="fragment-number">IV.</div>
+      <div class="fragment" data-idx="3" data-photo="sky" data-caption="9,272 km of sky." data-key="sky">
+        <div class="fragment-number">IV.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">You, in a different country, becoming somebody bigger.</div>
         <div class="fragment-reveal">Watched it from far away. Didn't say it loud enough. So here, in writing: I am proud of you in the quiet, embarrassing, sit-in-your-chest way that doesn't go anywhere.<br><span class="fragment-photo-cue">view photo →</span></div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="sky">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="sky" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="4">
-        <div class="fragment-number">V.</div>
+      <div class="fragment" data-idx="4" data-key="swissroll">
+        <div class="fragment-number">V.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The Swiss roll incident.</div>
         <div class="fragment-reveal">One bite. ONE BITE. Then full personal vendetta. I think about it more often than I'd like to admit. Iconic restraint. Iconic disrespect. Both can be true.</div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="swissroll">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="swissroll" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="5" data-photo="letter" data-caption="kept the voice notes too.">
-        <div class="fragment-number">VI.</div>
+      <div class="fragment" data-idx="5" data-photo="letter" data-caption="kept the voice notes too." data-key="letter">
+        <div class="fragment-number">VI.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The fact that I still thought of you. Random Tuesdays. No reason.</div>
         <div class="fragment-reveal">A song. A weird billboard. Someone saying something dumb in a queue. Distance doesn't really do what people say it does. Not for us, anyway.<br><span class="fragment-photo-cue">view photo →</span></div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="letter">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="letter" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
     </div>
@@ -410,9 +435,9 @@ const HTML = `
 </div>
 
 <div class="banner" id="banner">
-  <div class="banner-eyebrow">all sixteen · found</div>
+  <div class="banner-eyebrow">all twenty-two · found</div>
   <div class="banner-title">You found everything.<br>Of course you did.</div>
-  <div class="banner-body">That's the thing about you — you don't stop until you've seen the whole picture.<br>Same energy you bring to friendship. Same energy you bring to life.<br><br>I love you, menace. Happy 22.</div>
+  <div class="banner-body">That's the thing about you — you don't stop until you've seen the whole picture.<br>Same energy you bring to friendship. Same energy you bring to life.<br><br>22 secrets for 22 years of you. I love you, menace. Happy birthday.</div>
   <button class="banner-close" id="banner-close">close</button>
 </div>
 `;
@@ -496,18 +521,109 @@ function TanniePage() {
     });
 
     // ── Secret tracking
-    const found = new Set<string>();
-    const TOTAL_SECRETS = 16;
+    const TOTAL_SECRETS = 22;
+    const STORAGE_KEY = "tannie-22-progress-v1";
+    const PHOTO_KEY = "tannie-22-photos-v1";
+    const PIN_KEY = "tannie-22-pins-v1";
+    let found = new Set<string>();
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) found = new Set(JSON.parse(raw));
+    } catch {}
+    function saveFound() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...found])); } catch {} }
+    function haptic(p: number | number[] = 18) {
+      try { if ("vibrate" in navigator) navigator.vibrate(p as any); } catch {}
+    }
+    const tipEl = $("tip-toast")!;
+    let tipTimer: ReturnType<typeof setTimeout> | null = null;
+    function showTip(html: string, ms = 2600) {
+      tipEl.innerHTML = html;
+      tipEl.classList.add("show");
+      if (tipTimer) clearTimeout(tipTimer);
+      tipTimer = setTimeout(() => tipEl.classList.remove("show"), ms);
+    }
     function foundSecret(key: string) {
       if (found.has(key)) return;
       found.add(key);
+      saveFound();
+      haptic([12, 40, 22]);
       secretCount.textContent = String(found.size);
       secretHint.classList.add("show");
       // tiny burst
       burstHearts(6, lastX || window.innerWidth/2, lastY || 80);
+      showTip(`<span class="tk">secret ${found.size}/22</span> · found`, 1800);
       if (found.size === TOTAL_SECRETS) {
-        setTimeout(() => { confettiBurst(80); banner.classList.add("show"); }, 500);
+        setTimeout(() => { confettiBurst(120); haptic([40,60,40,60,80]); banner.classList.add("show"); }, 500);
       }
+    }
+    secretCount.textContent = String(found.size);
+    if (found.size > 0) secretHint.classList.add("show");
+
+    // ── Photo uploads (per fragment, persisted as data URLs)
+    let photos: Record<string, string> = {};
+    try { photos = JSON.parse(localStorage.getItem(PHOTO_KEY) || "{}"); } catch {}
+    function applyThumb(key: string, dataUrl: string) {
+      const t = document.querySelector<HTMLElement>(`.photo-thumb[data-thumb="${key}"]`);
+      if (t) { t.style.backgroundImage = `url(${dataUrl})`; t.classList.remove("empty"); t.textContent = ""; }
+    }
+    Object.entries(photos).forEach(([k, v]) => { applyThumb(k, v); PHOTO_MAP[k] = v; });
+    function readFile(file: File): Promise<string> {
+      return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result as string); r.onerror = rej; r.readAsDataURL(file); });
+    }
+    function downscale(dataUrl: string): Promise<string> {
+      return new Promise((res) => {
+        const img = new Image();
+        img.onload = () => {
+          const max = 900; let w = img.width, h = img.height;
+          if (w > max || h > max) { const r = Math.min(max/w, max/h); w = Math.round(w*r); h = Math.round(h*r); }
+          const c = document.createElement("canvas"); c.width = w; c.height = h;
+          c.getContext("2d")!.drawImage(img, 0, 0, w, h);
+          res(c.toDataURL("image/jpeg", 0.82));
+        };
+        img.onerror = () => res(dataUrl);
+        img.src = dataUrl;
+      });
+    }
+    document.querySelectorAll<HTMLInputElement>('input[data-upload]').forEach((inp) => {
+      inp.addEventListener("change", async () => {
+        const f = inp.files?.[0]; if (!f) return;
+        try {
+          const raw = await readFile(f);
+          const small = await downscale(raw);
+          const k = inp.dataset.upload!;
+          photos[k] = small;
+          try { localStorage.setItem(PHOTO_KEY, JSON.stringify(photos)); } catch {}
+          applyThumb(k, small);
+          PHOTO_MAP[k] = small;
+          const frag = inp.closest<HTMLElement>(".fragment");
+          if (frag) { frag.dataset.photo = k; if (!frag.dataset.caption) frag.dataset.caption = "yours."; }
+          haptic(30);
+          foundSecret("upload-first");
+          if (Object.keys(photos).length >= 6) foundSecret("upload-all");
+          showTip(`<span class="tk">photo saved</span> · stays on your phone`, 2200);
+        } catch {}
+      });
+    });
+
+    // ── Restore pins
+    let pins: string[] = [];
+    try { pins = JSON.parse(localStorage.getItem(PIN_KEY) || "[]"); } catch {}
+    function savePins() { try { localStorage.setItem(PIN_KEY, JSON.stringify(pins)); } catch {} }
+    pins.forEach((k) => document.querySelector(`.fragment[data-key="${k}"]`)?.classList.add("pinned"));
+
+    // forward decls so loader-enter can call these (function decls are hoisted)
+    function enableMotion() {
+      const DM = (window as any).DeviceMotionEvent;
+      if (DM && typeof DM.requestPermission === "function") {
+        DM.requestPermission().then((p: string) => { if (p === "granted") window.addEventListener("devicemotion", onMotion); }).catch(() => {});
+      } else {
+        window.addEventListener("devicemotion", onMotion);
+      }
+    }
+    function showOnboarding() {
+      setTimeout(() => showTip(`gestures live here · <span class="tk">long-press</span>, <span class="tk">double-tap</span>, <span class="tk">shake</span>`, 3600), 1200);
+      setTimeout(() => showTip(`upload your own photos to the memories ↓`, 3000), 5200);
+      if (found.size > 0) setTimeout(() => showTip(`welcome back · <span class="tk">${found.size}/22</span> already found`, 2800), 8800);
     }
 
     // ── Polaroid
@@ -527,6 +643,8 @@ function TanniePage() {
     // ── Loader enter
     $("loader-enter")!.addEventListener("click", () => {
       loader.classList.add("out");
+      enableMotion();
+      haptic(20);
       setTimeout(() => {
         main.classList.add("visible");
         progressBar.classList.add("show");
@@ -534,6 +652,7 @@ function TanniePage() {
         secretHint.classList.add("show");
         confettiBurst(30);
         initObservers();
+        showOnboarding();
       }, 800);
     });
 
@@ -549,9 +668,28 @@ function TanniePage() {
     // ── Fragments
     let openedCount = 0;
     const totalFragments = 6;
+    const lastTap = new Map<HTMLElement, number>();
+    let lpTimer: ReturnType<typeof setTimeout> | null = null;
     document.querySelectorAll<HTMLDivElement>(".fragment").forEach((frag) => {
+      const startLP = () => {
+        if (lpTimer) clearTimeout(lpTimer);
+        lpTimer = setTimeout(() => {
+          haptic(20);
+          showTip(`tip · double-tap to <span class="tk">pin ★</span> a memory`, 2400);
+          foundSecret("longpress-tile");
+        }, 650);
+      };
+      const endLP = () => { if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; } };
+      frag.addEventListener("mousedown", startLP);
+      frag.addEventListener("mouseup", endLP);
+      frag.addEventListener("mouseleave", endLP);
+      frag.addEventListener("touchstart", startLP, { passive: true });
+      frag.addEventListener("touchend", endLP);
+      frag.addEventListener("touchmove", endLP);
+
       frag.addEventListener("click", (e) => {
         const target = e.target as HTMLElement;
+        if (target.closest(".photo-upload-label, .photo-slot")) return;
         if (target.classList.contains("fragment-photo-cue")) {
           e.stopPropagation();
           const photo = frag.dataset.photo;
@@ -559,6 +697,18 @@ function TanniePage() {
           if (photo) showPolaroid(photo, cap, "photo-" + photo);
           return;
         }
+        const now = Date.now();
+        const prev = lastTap.get(frag) || 0;
+        if (now - prev < 320) {
+          frag.classList.toggle("pinned");
+          const k = frag.dataset.key || frag.dataset.idx || "";
+          if (frag.classList.contains("pinned")) { if (!pins.includes(k)) pins.push(k); }
+          else { pins = pins.filter((x) => x !== k); }
+          savePins(); haptic(15);
+          if (pins.length >= 1) foundSecret("pin-one");
+          lastTap.set(frag, 0); return;
+        }
+        lastTap.set(frag, now);
         if (frag.classList.contains("opened")) return;
         frag.classList.add("opened");
         openedCount++;
@@ -628,6 +778,7 @@ function TanniePage() {
       if (stampHeld) return;
       stampTimer = setTimeout(() => {
         stampHeld = true;
+        haptic([10, 30, 10]);
         stampEl.classList.add("broken");
         showPolaroid("letter", "kept all your voice notes too.", "stamp-hold");
       }, 1200);
@@ -739,16 +890,63 @@ function TanniePage() {
 
     // ── Shake-for-hearts (mobile)
     let lastShake = 0;
-    window.addEventListener("devicemotion", (e) => {
+    function onMotion(e: DeviceMotionEvent) {
       const a = e.accelerationIncludingGravity;
       if (!a) return;
       const mag = Math.abs(a.x || 0) + Math.abs(a.y || 0) + Math.abs(a.z || 0);
       if (mag > 35 && Date.now() - lastShake > 1500) {
         lastShake = Date.now();
+        haptic([30, 60, 30]);
         rainHearts(25);
         foundSecret("shake");
       }
+    }
+    // attach immediately for non-iOS / where permission isn't required
+    window.addEventListener("devicemotion", onMotion);
+
+    // ── Long-press headline
+    const headline = $("ch1-headline");
+    if (headline) {
+      let hT: ReturnType<typeof setTimeout> | null = null;
+      const s = () => { if (hT) clearTimeout(hT); hT = setTimeout(() => {
+        haptic(40);
+        headline.innerHTML = "Some people you outgrow.<br><em>You</em> are the home I keep going back to.";
+        showTip(`<span class="tk">truth unlocked</span>`, 2200);
+        foundSecret("longpress-headline");
+      }, 1500); };
+      const e = () => { if (hT) { clearTimeout(hT); hT = null; } };
+      headline.addEventListener("mousedown", s);
+      headline.addEventListener("mouseup", e);
+      headline.addEventListener("mouseleave", e);
+      headline.addEventListener("touchstart", s, { passive: true });
+      headline.addEventListener("touchend", e);
+    }
+
+    // ── Tap progress dots in order 1→6 secret
+    const dotSeq: number[] = [];
+    [0,1,2,3,4,5].forEach((i) => {
+      const d = $("pd" + i); if (!d) return;
+      d.addEventListener("click", () => {
+        dotSeq.push(i);
+        d.classList.add("lit"); setTimeout(() => d.classList.remove("lit"), 400);
+        haptic(8);
+        if (dotSeq.length > 6) dotSeq.shift();
+        const ok = dotSeq.length === 6 && dotSeq.every((v, idx) => v === idx);
+        if (ok) { foundSecret("dot-sequence"); confettiBurst(40); }
+      });
     });
+
+    // ── Swipe-down on the letter
+    const lwSwipe = $("letter-wrap");
+    if (lwSwipe) {
+      let sy = 0, swiped = false;
+      lwSwipe.addEventListener("touchstart", (e) => { sy = e.touches[0].clientY; swiped = false; }, { passive: true });
+      lwSwipe.addEventListener("touchmove", (e) => {
+        if (swiped) return;
+        const dy = e.touches[0].clientY - sy;
+        if (dy > 90) { swiped = true; haptic(25); showTip(`<span class="tk">postmark unsealed</span> · vereeniging → you`, 2600); foundSecret("swipe-letter"); }
+      }, { passive: true });
+    }
 
     // ── Helpers
     function rainHearts(n: number) {
