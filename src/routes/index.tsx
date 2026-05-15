@@ -279,8 +279,10 @@ const HTML = `
 <audio id="ambient" loop><source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_5e74f32e2a.mp3" type="audio/mp3"></audio>
 
 <div class="secret-hint" id="secret-hint">
-  secrets · <span class="count" id="secret-count">0</span> / 16 <span class="pulse"> · keep poking</span>
+  secrets · <span class="count" id="secret-count">0</span> / 22 <span class="pulse"> · keep poking</span>
 </div>
+
+<div class="tip-toast" id="tip-toast"></div>
 
 <div class="progress-bar" id="progress-bar">
   <div class="progress-dot" id="pd0"></div><div class="progress-dot" id="pd1"></div><div class="progress-dot" id="pd2"></div>
@@ -289,12 +291,12 @@ const HTML = `
 
 <div id="main">
   <section class="chapter" id="ch1">
-    <div class="ch1-eyebrow">Twenty — two · A letter from your person</div>
-    <div class="ch1-headline">Some people you outgrow.<br><em>You</em> I just keep choosing.</div>
+    <div class="ch1-eyebrow">Twenty — two · A letter to my person</div>
+    <div class="ch1-headline" id="ch1-headline" title="press &amp; hold me">Some people you outgrow.<br><em>You</em> I just keep choosing.</div>
     <div class="ch1-rule"></div>
     <div class="ch1-body">
-      Last year I wrote you a whole novel. This year I'm writing you the truth.<br><br>
-      Tap things. Hold things. Shake things.<br>Sixteen secrets are hiding in here. Find them all.
+      Last year I wrote you a novel. This year I'm writing you the truth.<br><br>
+      Tap things. Hold things. Shake things. Upload your own.<br>Twenty-two secrets are hiding in here — one for every year of you.
     </div>
     <div class="scroll-nudge">scroll ↓</div>
   </section>
@@ -304,40 +306,46 @@ const HTML = `
     <div class="ch2-title reveal-on-scroll">Receipts. Memories. Crimes.<br>The friendship in evidence.</div>
     <div class="ch2-instruction reveal-on-scroll">— tap each tile. some hide a photo. —</div>
     <div class="fragment-grid reveal-on-scroll" id="fragment-grid">
-      <div class="fragment" data-idx="0" data-photo="cafe" data-caption="our table. always.">
-        <div class="fragment-number">I.</div>
+      <div class="fragment" data-idx="0" data-photo="cafe" data-caption="our table. always." data-key="cafe">
+        <div class="fragment-number">I.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The laugh. Still the loudest weapon you own.</div>
         <div class="fragment-reveal">Hyena energy. Zero filter. Heads turn, dogs bark, waiters reconsider their career. It's the sound of home for me — even from 9,272 km away.<br><span class="fragment-photo-cue">view photo →</span></div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="cafe">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="cafe" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="1">
-        <div class="fragment-number">II.</div>
+      <div class="fragment" data-idx="1" data-key="loyalty">
+        <div class="fragment-number">II.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The fact that you've never once aimed your sharpness at me.</div>
         <div class="fragment-reveal">You could have. I've earned it once or twice. You never did. That's not nothing — that's a whole code of honour, and I clocked it every single time.</div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="loyalty">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="loyalty" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="2" data-photo="road" data-caption="the highway. before the bug.">
-        <div class="fragment-number">III.</div>
+      <div class="fragment" data-idx="2" data-photo="road" data-caption="the highway. before the bug." data-key="road">
+        <div class="fragment-number">III.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The bug. The bribe. The four learner's tests.</div>
         <div class="fragment-reveal">I'm telling that story until I'm eighty and toothless. Not because it was funny — though it was criminal — but because it was so impossibly, perfectly us.<br><span class="fragment-photo-cue">view photo →</span></div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="road">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="road" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="3" data-photo="sky" data-caption="9,272 km of sky.">
-        <div class="fragment-number">IV.</div>
+      <div class="fragment" data-idx="3" data-photo="sky" data-caption="9,272 km of sky." data-key="sky">
+        <div class="fragment-number">IV.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">You, in a different country, becoming somebody bigger.</div>
         <div class="fragment-reveal">Watched it from far away. Didn't say it loud enough. So here, in writing: I am proud of you in the quiet, embarrassing, sit-in-your-chest way that doesn't go anywhere.<br><span class="fragment-photo-cue">view photo →</span></div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="sky">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="sky" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="4">
-        <div class="fragment-number">V.</div>
+      <div class="fragment" data-idx="4" data-key="swissroll">
+        <div class="fragment-number">V.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The Swiss roll incident.</div>
         <div class="fragment-reveal">One bite. ONE BITE. Then full personal vendetta. I think about it more often than I'd like to admit. Iconic restraint. Iconic disrespect. Both can be true.</div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="swissroll">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="swissroll" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
-      <div class="fragment" data-idx="5" data-photo="letter" data-caption="kept the voice notes too.">
-        <div class="fragment-number">VI.</div>
+      <div class="fragment" data-idx="5" data-photo="letter" data-caption="kept the voice notes too." data-key="letter">
+        <div class="fragment-number">VI.</div><div class="fragment-pin">★</div>
         <div class="fragment-locked">The fact that I still thought of you. Random Tuesdays. No reason.</div>
         <div class="fragment-reveal">A song. A weird billboard. Someone saying something dumb in a queue. Distance doesn't really do what people say it does. Not for us, anyway.<br><span class="fragment-photo-cue">view photo →</span></div>
+        <div class="photo-slot"><div class="photo-thumb empty" data-thumb="letter">+</div><label class="photo-upload-label">upload yours<input type="file" accept="image/*" data-upload="letter" /></label></div>
         <div class="fragment-hint">tap</div>
       </div>
     </div>
