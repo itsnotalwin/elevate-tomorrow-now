@@ -552,6 +552,8 @@ function TanniePage() {
     // ── Loader enter
     $("loader-enter")!.addEventListener("click", () => {
       loader.classList.add("out");
+      enableMotion();
+      haptic(20);
       setTimeout(() => {
         main.classList.add("visible");
         progressBar.classList.add("show");
@@ -559,6 +561,7 @@ function TanniePage() {
         secretHint.classList.add("show");
         confettiBurst(30);
         initObservers();
+        showOnboarding();
       }, 800);
     });
 
