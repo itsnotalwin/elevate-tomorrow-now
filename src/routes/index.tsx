@@ -97,6 +97,22 @@ body::after { content: ''; position: fixed; inset: 0; background-image: url("dat
 .fragment.opened .fragment-hint { opacity: 0; }
 .fragment::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 0%, rgba(212,184,122,0.04) 50%, transparent 100%); transform: translateX(-100%); transition: transform 0s; }
 .fragment:hover::before { transform: translateX(100%); transition: transform 0.9s ease; }
+.fragment.pinned { box-shadow: inset 0 0 0 1px var(--gold); }
+.fragment-pin { position: absolute; top: 0.9rem; right: 1rem; font-size: 13px; color: var(--gold); opacity: 0; transition: opacity 0.3s; }
+.fragment.pinned .fragment-pin { opacity: 1; }
+
+/* PHOTO UPLOAD */
+.photo-slot { margin-top: 1rem; display: flex; align-items: center; gap: 0.7rem; }
+.photo-thumb { width: 46px; height: 46px; background: #0e0c09 center/cover no-repeat; border: 1px solid #2a261e; flex-shrink: 0; }
+.photo-thumb.empty { display: flex; align-items: center; justify-content: center; color: var(--ink-soft); font-family: var(--sans); font-size: 18px; }
+.photo-upload-label { font-family: var(--sans); font-size: 9px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; cursor: none; border-bottom: 1px dashed var(--gold-dim); padding-bottom: 2px; transition: color 0.3s; }
+.photo-upload-label:hover { color: var(--gold); }
+.photo-upload-label input { display: none; }
+
+/* TIP TOAST */
+.tip-toast { position: fixed; left: 50%; bottom: 4.2rem; transform: translateX(-50%) translateY(20px); background: rgba(20,18,14,0.95); border: 1px solid var(--gold-dim); padding: 0.8rem 1.4rem; font-family: var(--sans); font-size: 11px; letter-spacing: 0.15em; color: var(--paper); text-transform: uppercase; z-index: 800; opacity: 0; transition: all 0.5s var(--t); pointer-events: none; max-width: 92vw; text-align: center; }
+.tip-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.tip-toast .tk { color: var(--gold); }
 
 /* JUKEBOX */
 .jukebox-wrap { max-width: 720px; margin: 6rem auto 0; text-align: center; opacity: 0; transition: opacity 1.2s var(--t); }
@@ -183,8 +199,9 @@ body::after { content: ''; position: fixed; inset: 0; background-image: url("dat
 /* PROGRESS */
 .progress-bar { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 100; opacity: 0; transition: opacity 0.6s; }
 .progress-bar.show { opacity: 1; }
-.progress-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ink-mid); transition: background 0.4s, transform 0.4s; }
+.progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-mid); transition: background 0.4s, transform 0.4s; cursor: none; }
 .progress-dot.done { background: var(--gold); transform: scale(1.4); }
+.progress-dot.lit { background: var(--rose); transform: scale(1.6); }
 
 /* MUSIC */
 .music-btn { position: fixed; top: 1.5rem; right: 1.5rem; font-family: var(--sans); font-size: 9px; letter-spacing: 0.3em; color: var(--ink-soft); text-transform: uppercase; background: none; border: 1px solid #2a261e; padding: 0.6rem 1rem; cursor: none; z-index: 200; opacity: 0; transition: opacity 0.6s, color 0.3s, border-color 0.3s; }
